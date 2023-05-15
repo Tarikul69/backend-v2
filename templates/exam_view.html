@@ -1,0 +1,135 @@
+{% extends 'base.html' %}
+{% load template_tags %}
+{% block content %}
+<div class="col-lg-11">
+        <div class="card">
+            <div class="card-header bg-transparent">
+                 <div class="form-inline">
+                    <span class=""><i class="fas fa-book-open fa-lg border rounded bg-primary text-light p-2"></i> Exam Details</span>
+                     <a href="{% url 'exam_update' exam.0.exam_id %}" class="btn bg-primary  ml-auto p-2"><i class="fas fa-edit fa-lg text-light"></i></a>
+                </div>
+            </div>
+            {% for foo in messages %}
+                                <div class="alert {{ foo.tags }}  alert-dismissible fade show " role="alert">
+                                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
+                                    {{ foo }}
+                                </div>
+            {% endfor %}
+            <div class="card-body">
+                <table class="table table-responsive-sm">
+                    <tr class="small">
+                        <th>Exam Name</th>
+                        <td>{{exam.0.exam_name}}</td>
+                    </tr>
+                    <tr class="small">
+                        <th>Instructions</th>
+                        <td>{{exam.0.instructions|safe}}</td>
+                    </tr>
+                    <tr class="small">
+                        <th>Proctor</th>
+                        <td>
+                            {{ exam.0.proctor_id.all|join:", " }}
+                        </td>
+                    </tr>
+                    <tr class="small">
+                        <th>{% if request.user|get_college_type == 'College' %}Branch{% elif request.user|get_college_type == 'School' %}Class{% endif %}</th>
+                        <td>{{ exam.0.branch_id.branch_name }}</td>
+                    </tr>
+                    <tr class="small">
+                        <th>Subject</th>
+                        <td>{{ exam.0.subject_id.subject_name }}</td>
+                    </tr>
+                    <tr class="small">
+                        <th>{% if request.user|get_college_type == 'College' %}Semester{% elif request.user|get_college_type == 'School' %}Section{% endif %}</th>
+                        <td>{{ exam.0.semester_id.semester_name }}</td>
+                    </tr>
+                    <tr class="small">
+                        <th>Date</th>
+                        <td>{{ exam.0.date }}</td>
+                    </tr>
+                    <tr class="small">
+                        <th>Durations</th>
+                        <td>{{ exam.0.duration }} minutes</td>
+                    </tr>
+                    <tr class="small">
+                        <th>Start Time</th>
+                        <td>{{ exam.0.starting_time }}</td>
+                    </tr>
+                    <tr class="small">
+                        <th>End Time</th>
+                        <td>{{ exam.0.ending_time }}</td>
+                    </tr>
+                </table>
+            </div>
+            <div class="card-header bg-transparent border-top">
+                 <div class="form-inline">
+                    <span class=""><i class="fas fa-question-circle fa-lg border rounded bg-primary text-light p-2"></i> Exam Questions</span>
+                     <div class="dropdown ml-auto dropleft">
+                      <button class="btn btn-primary text-light  " type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        <i class="fas fa-plus fa-lg text-light"></i> Add
+                      </button>
+                      <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                        <a class="dropdown-item" href="{% url 'question_add' exam.0.exam_id %}?type=MCQ">MCQ</a>
+                        <a class="dropdown-item" href="{% url 'question_add' exam.0.exam_id %}?type=Subjective">Subjective</a>
+                      </div>
+                    </div>
+                </div>
+            </div>
+            <div class="card-body small">
+                    <table class="table table-hover ">
+                        <tr>
+                            <th>Questions</th>
+                            <th>Type</th>
+                            <th>Exam</th>
+                            <th>Actions</th>
+                        </tr>
+                        {% for q in questions %}
+                            <!---modal--->
+                            <div class="modal fade" id="questionDelete{{ q.question_id }}" role="dialog">
+                            <div class="modal-dialog">
+                                    <div class="modal-content">
+                                        <div class="modal-header border-0">
+                                            <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                        </div>
+                                        <div class="model-body border-0">
+                                            <center>
+                                            <i class='fas fa-exclamation-triangle fa-5x text-danger text-center'></i>
+                                            <p class="text-muted text-center mt-2">Are you sure you want to delete question</p>
+                                            </center>
+                                        </div>
+                                        <div class="modal-footer border-0">
+                                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                                            <a href="{% url 'question_delete' q.question_id %}" class="btn btn-danger">Delete</a>
+                                        </div>
+                                    </div>
+                            </div>
+                            </div>
+                            <!-----end-modal---->
+                            <tr>
+                            <td>{{ q.questions }}</td>
+                            <td>
+                                {% if q.question_type == 'M' %}
+                                MCQ
+                                {% elif q.question_type == 'S'  %}
+                                    Subjective
+                                {% else %}
+                                {% endif %}
+                            </td>
+                            <td>{{ q.exam_id.exam_name }}</td>
+                            <td>
+                                <a href="{% url 'question_view' q.question_id %}" class="btn btn-success" title="View"><i class="fas fa-eye"></i></a>
+                                <button type="button" class="btn btn-danger" data-toggle="modal" title="Delete" data-target="#questionDelete{{ q.question_id }}"><i class="fas fa-trash"></i></button>
+                            </td>
+                            </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="7"><div class="alert alert-danger h6 text-center p-3" role="alert">No questions availables!</div></td>
+                        </tr>
+                        {% endfor %}
+                    </table>
+                </div>
+        </div>
+</div>
+{% endblock %}

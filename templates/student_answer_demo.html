@@ -1,0 +1,135 @@
+{% extends 'base.html' %}
+{% load template_tags %}
+{% block content %}
+    <div class="col-lg-11">
+        <div class=" card-header mb-2 border bg-transparent ">
+            <div class="row">
+                <span class="mr-auto"><i class="fas fa-keyboard fa-lg border rounded bg-primary text-light p-2"></i> Answer Demo</span>
+                <!-- Example single danger button -->
+            <div class="btn-group dropleft">
+              <button type="button" class="btn bg-transparent border text-muted dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                Row Per Page
+              </button>
+              <div class="dropdown-menu text-center bg-light small">
+                <a class="dropdown-item " href="{% url 'student_answer_demo' std_id=std_id ex_id=ex_id %}?sort=10">10</a>
+                <div class="dropdown-divider"></div>
+                <a class="dropdown-item" href="{% url 'student_answer_demo' std_id=std_id ex_id=ex_id %}?sort=15">15</a>
+                <div class="dropdown-divider"></div>
+                <a class="dropdown-item" href="{% url 'student_answer_demo' std_id=std_id ex_id=ex_id %}?sort=20">20</a>
+                <div class="dropdown-divider"></div>
+                <a class="dropdown-item" href="{% url 'student_answer_demo' std_id=std_id ex_id=ex_id %}?sort=25">25</a>
+              </div>
+            </div>
+            </div>
+        </div>
+        <div class="row">
+        {% for a in page_obj %}
+        {% if a.question_id != None %}
+        <div class="col-lg-12 mb-2">
+           <div class="card">
+            <div class="card-header">Q. {{ a.question_id.questions }}</div>
+           {% if a.question_id.question_type == 'M' %}
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-6">
+                        <p>1. {{ a.question_id.option_a }}</p>
+                    </div>
+                    <div class="col-6">
+                        <p>2. {{ a.question_id.option_b }}</p>
+                    </div>
+                    <div class="col-6">
+                        <p>3. {{ a.question_id.option_c }}</p>
+                    </div>
+                    <div class="col-6">
+                        <p>4. {{ a.question_id.option_d }}</p>
+                    </div>
+
+                </div>
+            </div>
+            <div class="card-footer m-2 p-0">
+            <div class="container">
+                <div class="row">
+                    <div class="col-6">
+                        <p class="text-muted small">Answer:
+                            {% if a.answer|lower == a.question_id.answer|lower %}
+                                <span class="text-success">{{ a.answer }} <i class="fas fa-check"></i></span>
+                            {% else %}
+                                <span class="text-danger">{{ a.answer }} <i class="fas fa-times"></i></span>
+                            {% endif %}
+                        </p>
+                    </div>
+                    <div class="col-6">
+                        <p class="text-muted small">Correct Answer : <span class="text-primary">{{ a.question_id.answer }}</span></p>
+                    </div>
+                </div>
+            </div>
+            </div>
+           {% elif a.question_id.question_type == 'S' %}
+            <div class="card-body">
+            <div class="form-inline">
+                <p>Answer:</p><p class="ml-auto">Question Mark: <span class="small text-muted">{{ a.question_id.marks }}</span></p>
+            </div>
+            <span class="text-muted small">{{ a.answer }}</span>
+            </div>
+           {% endif %}
+        </div>
+        </div>
+        {% endif %}
+        {% endfor %}
+        </div>
+        <nav aria-label="Page navigation example " style="margin-top: 10px!important;">
+    <div class="row">
+            <ul class="small">Showing <b>{{ page_obj.number }}</b> / <b>{{ page_obj.paginator.num_pages }}</b> entries</ul>
+            <ul class="pagination pagination-sm ml-auto mr-4">
+                  {% if page_obj.has_previous %}
+                    <li class="page-item ">
+                        <a href="?sort={{ sort }}&page={{ page_obj.previous_page_number }}" class="page-link"><i class="fas fa-long-arrow-alt-left  text-muted"> Previous</i></a>
+                    </li>
+                  {% else %}
+                      <li class="page-item disabled mr-2">
+                        <i class="fas fa-long-arrow-alt-left  page-link text-muted"> Previous</i>
+                    </li>
+                  {% endif %}
+                  {% if page_obj.paginator.num_pages == 1 %}
+                      <li class="page-item active"><a href="#" class="page-link">{{ page_obj.number }}</a></li>
+                  {% elif page_obj.number == 1 %}
+                      <li class="page-item active"><a href="#" class="page-link">{{ page_obj.number }}</a></li>
+                      <li class="page-item "><a href="?sort={{ sort }}&page={{ page_obj.number|add:1 }}" class="page-link">{{ page_obj.number|add:1 }}</a></li>
+                      <li class="page-item "><a href="?sort={{ sort }}&page={{ page_obj.paginator.num_pages }}" class="page-link">{{ page_obj.paginator.num_pages }}</a></li>
+                  {% elif page_obj.number|add:-1 == 1 %}
+                      <li class="page-item "><a href="?sort={{ sort }}&page=1" class="page-link">1</a></li>
+                      <li class="page-item active"><a href="#" class="page-link">{{ page_obj.number }}</a></li>
+                      <li class="page-item "><a href="?sort={{ sort }}&page={{ page_obj.number|add:1 }}" class="page-link">{{ page_obj.number|add:1 }}</a></li>
+                      <li class="page-item "><a href="?sort={{ sort }}&page={{ page_obj.paginator.num_pages }}" class="page-link">{{ page_obj.paginator.num_pages }}</a></li>
+                  {% elif page_obj.number == page_obj.paginator.num_pages %}
+                      <li class="page-item "><a href="?sort={{ sort }}&page=1" class="page-link">1</a></li>
+                      <li class="page-item "><a href="?sort={{ sort }}&page={{ page_obj.number|add:-1 }}" class="page-link">{{ page_obj.number|add:-1 }}</a></li>
+                      <li class="page-item active"><a href="#" class="page-link">{{ page_obj.number }}</a></li>
+                  {% elif page_obj.number|add:1 == page_obj.paginator.num_pages %}
+                      <li class="page-item "><a href="?sort={{ sort }}&page=1" class="page-link">1</a></li>
+                      <li class="page-item "><a href="?sort={{ sort }}&page={{ page_obj.number|add:-1 }}" class="page-link">{{ page_obj.number|add:-1 }}</a></li>
+                      <li class="page-item active"><a href="#" class="page-link">{{ page_obj.number }}</a></li>
+                      <li class="page-item "><a href="?sort={{ sort }}&page={{ page_obj.paginator.num_pages }}" class="page-link">{{ page_obj.paginator.num_pages }}</a></li>
+                  {% else %}
+                      <li class="page-item "><a href="?sort={{ sort }}&page=1" class="page-link">1</a></li>
+                      <li class="page-item "><a href="?sort={{ sort }}&page={{ page_obj.number|add:-1 }}" class="page-link">{{ page_obj.number|add:-1 }}</a></li>
+                      <li class="page-item active"><a href="#" class="page-link">{{ page_obj.number }}</a></li>
+                      <li class="page-item "><a href="?sort={{ sort }}&page={{ page_obj.number|add:1 }}" class="page-link">{{ page_obj.number|add:1 }}</a></li>
+                      <li class="page-item "><a href="?sort={{ sort }}&page={{ page_obj.paginator.num_pages }}" class="page-link">{{ page_obj.paginator.num_pages }}</a></li>
+                  {% endif %}
+
+                  {% if page_obj.has_next %}
+                    <li class="page-item">
+                        <a href="?sort={{ sort }}&page={{ page_obj.next_page_number }}" class="page-link"><i class="fas fa-long-arrow-alt-right  text-muted"> Next</i></a>
+                    </li>
+                  {% else %}
+                      <li class="page-item disabled ml-2">
+                        <i class="fas fa-long-arrow-alt-right page-link  text-muted"> Next</i>
+                    </li>
+                  {% endif %}
+
+                </ul>
+    </div>
+        </nav>
+    </div>
+{% endblock %}

@@ -1,0 +1,97 @@
+{% extends 'base.html' %}
+{% load template_tags %}
+{% block content %}
+    <div class="col-lg-11">
+        <div class="card">
+            <div class="card-header bg-transparent"><i class="fas fa-book-open fa-lg border rounded bg-primary text-light p-2"></i> Completed Exam</div>
+            <div class="card-body">
+                <table class="table table-responsive-sm">
+                    <thead class="bg-transparent">
+                    <tr>
+                        <th>S.N.</th>
+                        <th>Exam Name</th>
+                        <th>Subject</th>
+                        <th>{% if request.user|get_college_type == 'College' %}Branch{% elif request.user|get_college_type == 'School' %}Class{% endif %}</th>
+                        <th>{% if request.user|get_college_type == 'College' %}Semester{% elif request.user|get_college_type == 'School' %}Section{% endif %}</th>
+                        <th>Date</th>
+                        <th>Details</th>
+                        <th class="text-center">MCQ Publish Result</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for e in page_obj %}
+                        <tr>
+                        <td class="counterCell"></td>
+                        <td>{{ e.exam_name }}</td>
+                            <td><span class="badge text-light p-2 bg-{% cycle 'primary' 'secondary' 'success' 'warning' 'danger' 'info' 'dark' as rowcolors %}" >{{ e.subject_id.subject_name }}</span></td>
+                        <td>{{ e.branch_id.branch_name }}</td>
+                        <td>{{ e.semester_id.semester_name }}</td>
+                        <td>{{ e.date }}</td>
+                        <td><a href="{% url 'exam_attend_students' e.exam_id %}" class="btn btn-success" title="View"><i class=" fas fa-eye"></i></a></td>
+                        <td><center><a href="{% url 'send_test_result' e.exam_id %}" class="btn btn-info " title="MCQ Result Publish"><i class="  fas fa-poll"></i></a></center></td>
+                        </tr>
+                    {% empty %}
+                        <tr>
+                            <td colspan="8"><div class="alert alert-danger h6 text-center p-3" role="alert">No exam done!</div></td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <nav aria-label="Page navigation example " style="margin-top: 10px!important;">
+    <div class="row">
+            <ul class="small">Showing <b>{{ page_obj.number }}</b> / <b>{{ page_obj.paginator.num_pages }}</b> entries</ul>
+            <ul class="pagination pagination-sm ml-auto mr-4">
+                  {% if page_obj.has_previous %}
+                    <li class="page-item ">
+                        <a href="?page={{ page_obj.previous_page_number }}" class="page-link"><i class="fas fa-long-arrow-alt-left  text-muted"> Previous</i></a>
+                    </li>
+                  {% else %}
+                      <li class="page-item disabled mr-2">
+                        <i class="fas fa-long-arrow-alt-left  page-link text-muted"> Previous</i>
+                    </li>
+                  {% endif %}
+                  {% if page_obj.paginator.num_pages == 1 %}
+                      <li class="page-item active"><a href="#" class="page-link">{{ page_obj.number }}</a></li>
+                  {% elif page_obj.number == 1 %}
+                      <li class="page-item active"><a href="#" class="page-link">{{ page_obj.number }}</a></li>
+                      <li class="page-item "><a href="?page={{ page_obj.number|add:1 }}" class="page-link">{{ page_obj.number|add:1 }}</a></li>
+                      <li class="page-item "><a href="?page={{ page_obj.paginator.num_pages }}" class="page-link">{{ page_obj.paginator.num_pages }}</a></li>
+                  {% elif page_obj.number|add:-1 == 1 %}
+                      <li class="page-item "><a href="?page=1" class="page-link">1</a></li>
+                      <li class="page-item active"><a href="#" class="page-link">{{ page_obj.number }}</a></li>
+                      <li class="page-item "><a href="?page={{ page_obj.number|add:1 }}" class="page-link">{{ page_obj.number|add:1 }}</a></li>
+                      <li class="page-item "><a href="?page={{ page_obj.paginator.num_pages }}" class="page-link">{{ page_obj.paginator.num_pages }}</a></li>
+                  {% elif page_obj.number == page_obj.paginator.num_pages %}
+                      <li class="page-item "><a href="?page=1" class="page-link">1</a></li>
+                      <li class="page-item "><a href="?page={{ page_obj.number|add:-1 }}" class="page-link">{{ page_obj.number|add:-1 }}</a></li>
+                      <li class="page-item active"><a href="#" class="page-link">{{ page_obj.number }}</a></li>
+                  {% elif page_obj.number|add:1 == page_obj.paginator.num_pages %}
+                      <li class="page-item "><a href="?page=1" class="page-link">1</a></li>
+                      <li class="page-item "><a href="?page={{ page_obj.number|add:-1 }}" class="page-link">{{ page_obj.number|add:-1 }}</a></li>
+                      <li class="page-item active"><a href="#" class="page-link">{{ page_obj.number }}</a></li>
+                      <li class="page-item "><a href="?page={{ page_obj.paginator.num_pages }}" class="page-link">{{ page_obj.paginator.num_pages }}</a></li>
+                  {% else %}
+                      <li class="page-item "><a href="?page=1" class="page-link">1</a></li>
+                      <li class="page-item "><a href="?page={{ page_obj.number|add:-1 }}" class="page-link">{{ page_obj.number|add:-1 }}</a></li>
+                      <li class="page-item active"><a href="#" class="page-link">{{ page_obj.number }}</a></li>
+                      <li class="page-item "><a href="?page={{ page_obj.number|add:1 }}" class="page-link">{{ page_obj.number|add:1 }}</a></li>
+                      <li class="page-item "><a href="?page={{ page_obj.paginator.num_pages }}" class="page-link">{{ page_obj.paginator.num_pages }}</a></li>
+                  {% endif %}
+
+                  {% if page_obj.has_next %}
+                    <li class="page-item">
+                        <a href="?page={{ page_obj.next_page_number }}" class="page-link"><i class="fas fa-long-arrow-alt-right  text-muted"> Next</i></a>
+                    </li>
+                  {% else %}
+                      <li class="page-item disabled ml-2">
+                        <i class="fas fa-long-arrow-alt-right page-link  text-muted"> Next</i>
+                    </li>
+                  {% endif %}
+
+                </ul>
+    </div>
+        </nav>
+    </div>
+{% endblock %}

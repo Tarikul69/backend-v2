@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+{% load template_tags %}
+{% block content %}
+<div class="col-lg-11 bg-white mb-2">
+<div class="row">
+    <div class="col-lg-6 mx-auto">
+        <div class="card">
+            <div class="card-header bg-transparent"><i class="fas fa-chalkboard fa-lg border bg-primary rounded text-light p-2"></i> Update {% if request.user|get_college_type == 'College' %}Semester{% elif request.user|get_college_type == 'School' %}Section{% endif %}</div>
+            <div class="card-body">
+                <form action="" method="post" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    {% for form in form %}
+                    <div class="form-group">
+                                {{ form.label_tag }}
+                                {% if form.field.required %}<span class="text-danger">*</span>{% endif %}
+                                {{ form }}
+                                    <label for="" class="text-danger">{{ form.errors }}</label>
+                                </div>
+                    {% endfor %}
+                    <div class="form-group">
+                        <input type="submit" value="Update" class="btn btn-block" style="background-image: linear-gradient(to right,#01c095, #0384d3);color: white;">
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+</div>
+{% endblock %}

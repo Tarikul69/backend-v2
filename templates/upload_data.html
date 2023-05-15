@@ -1,0 +1,123 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="col-lg-11">
+    {% for foo in messages %}
+        <div class="alert {{ foo.tags }}  alert-dismissible fade show " role="alert">
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+            {{ foo }}
+        </div>
+    {% endfor %}
+<div class="row">
+    <div class="col-lg-6">
+        <div class="card">
+            <div class="card-header bg-transparent"><i class="far fa-file-excel bg-primary text-light p-2"></i> Upload Students Detail</div>
+            <div class="card-body">
+                <form action="{% url 'upload_data' %}" method="post" enctype="multipart/form-data" name="uploadForm" >
+                    {% csrf_token %}
+                    <div class="form-group">
+                        <label class="small text-muted" for="">Upload Excel File(.xlsx)</label>
+                        <div class='file file--upload'>
+                          <label for="student_upload" >
+                              <i class="material-icons">cloud_upload</i><span id="student_label"></span>
+                          </label>
+                      </div>
+                        <input id="student_upload" type="file" class="form-control" name="upload_file"  onchange="studentFileValidation();">
+                         <div class="" id="student_error"></div>
+                    </div>
+                    {% for form in student %}
+                                <div class="form-group">
+                                {{ form.label_tag }}
+                                {% if form.field.required %}<span class="text-danger">*</span>{% endif %}
+                                {{ form }}
+                                    <label for="" class="text-danger">{{ form.errors }}</label>
+                                </div>
+                    {% endfor %}
+                    <div class="form-group">
+                        <button type="submit" class="btn btn-block" onclick="return studentFileValidation()" style="background-image: linear-gradient(to right,#01c095, #0384d3);color: white;">Upload</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-6">
+        <div class="card">
+            <div class="card-header bg-transparent"><i class="far fa-file-excel bg-primary text-light p-2"></i> Upload Questions Paper</div>
+            <div class="card-body">
+                <form action="{% url 'upload_questions' %}"  method="post" enctype="multipart/form-data" name="questionsForm" >
+                    {% csrf_token %}
+                    <div class="form-group">
+                        <label class="small text-muted" for="">Upload Excel File(.xlsx)</label>
+                        <div class='file file--upload'>
+                          <label for="question_upload" >
+                              <i class="material-icons">cloud_upload</i><span id="question_label"></span>
+                          </label>
+                      </div>
+                        <input id="question_upload" type="file" class="form-control" name="upload_questions" onchange="questionsFileValidation()">
+                        <div class="" id="questions_error"></div>
+                    </div>
+                    {% for form in question %}
+                                <div class="form-group">
+                                {{ form.label_tag }}
+                                {% if form.field.required %}<span class="text-danger">*</span>{% endif %}
+                                {{ form }}
+                                    <label for="" class="text-danger">{{ form.errors }}</label>
+                                </div>
+                    {% endfor %}
+                    <div class="form-group">
+                        <input type="submit" value="Upload" class="btn btn-block " onclick="return questionsFileValidation()" style="background-image: linear-gradient(to right,#01c095, #0384d3);color: white;">
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+</div>
+    <script>
+    var uploadFile = document.forms["uploadForm"]["upload_file"];
+    var questionFile = document.forms["questionsForm"]["upload_questions"]
+    document.getElementById(`student_label`).innerHTML = 'Choose file';
+    document.getElementById(`question_label`).innerHTML = 'Choose file';
+
+    function studentFileValidation(){
+        if (uploadFile.value == "") {
+          document.getElementById(`student_error`).innerHTML = '<small class="text-danger">Please select excel file.</small>';
+          uploadFile.focus();
+          return false;
+        }
+        else{
+            var file_name = $('#student_upload')[0].files[0].name;
+            document.getElementById(`student_label`).innerHTML = file_name;
+            var extension = uploadFile.value.substring(uploadFile.value.lastIndexOf('.') + 1).toLowerCase();
+            if(extension != "xlsx"){
+                document.getElementById(`student_error`).innerHTML = '<small class="text-danger">Invalid file Format. Only .xlsx format allowed.</small>';
+                uploadFile.focus();
+                return false;
+            }
+        }
+        document.getElementById(`student_error`).innerHTML = '';
+        return true;
+    }
+
+    function questionsFileValidation(){
+        if (questionFile.value == "") {
+          document.getElementById(`questions_error`).innerHTML = '<small class="text-danger">Please select excel file.</small>';
+          questionFile.focus();
+          return false;
+        }
+        else{
+            var file_name = $('#question_upload')[0].files[0].name;
+            document.getElementById(`question_label`).innerHTML = file_name;
+            var extension = questionFile.value.substring(questionFile.value.lastIndexOf('.') + 1).toLowerCase();
+            if(extension != "xlsx"){
+                document.getElementById(`questions_error`).innerHTML = '<small class="text-danger">Invalid file Format. Only .xlsx format allowed.</small>';
+                questionFile.focus();
+                return false;
+            }
+        }
+        document.getElementById(`questions_error`).innerHTML = '';
+        return true;
+    }
+    </script>
+{% endblock %}

@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>ExamPortal</title>
+     {% load static %}
+    <link rel="stylesheet" href="{% static 'bootstrap.css' %}">
+    <link rel="stylesheet" href="{% static 'style.css' %}">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.5.0/css/all.css" integrity="sha384-B4dIYHKNBt8Bc12p+WXckhzcICo0wtJAoU8YZTY5qE0Id1GSseTk6S+L3BlXeVIU" crossorigin="anonymous">
+    <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-beta.1/dist/css/select2.min.css" rel="stylesheet" />
+    <link href='https://fonts.googleapis.com/css?family=Ubuntu:500' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-multiselect/0.9.13/css/bootstrap-multiselect.css">
+    </head>
+<body>
+<nav class="navbar navbar-expand-lg navbar-dark sticky-top" style="background-image: linear-gradient(to right,#01c095, #02bd96);">
+        <a href="{% url 'home' %}" class="navbar-brand">Admin Portal</a>
+        <ul class="navbar-nav ml-auto">
+            <li class="nav-item">
+                <a href="{% url 'logouts' %}" class="nav-link"><i class="fas fa-sign-out-alt"> LogOut</i> </a>
+            </li>
+        </ul>
+</nav>
+{% load template_tags %}
+<div class="container-fluid">
+        <div class="row mt-2">
+            <div class="col-lg-1" style="margin-top: -10px!important;">
+                <div class="  " id="sidebar" style="background-image: linear-gradient(#01c095, #0384d3);overflow-y: scroll;height: 100%!important;scrollbar-width: none;">
+                          <a href="{% url 'home' %}" class="nav-link text-light small text-center "><i class="fab fa-windows fa-2x"></i><br>Dashboard</a>
+                          <a href="{% url 'branch' %}" class="nav-link text-light small  text-center"><i class="fas fa-code-branch fa-2x"></i><br>{% if request.user|get_college_type == 'College' %}Branch{% elif request.user|get_college_type == 'School' %}Class{% endif %}</a>
+                          <a href="{% url 'semester' %}" class="nav-link text-light small  text-center"><i class="fas fa-chalkboard fa-2x"></i><br>{% if request.user|get_college_type == 'College' %}Semester{% elif request.user|get_college_type == 'School' %}Section{% endif %}</a>
+                          <a href="{% url 'subject' %}" class="nav-link text-light small  text-center"><i class="fas fa-book fa-2x"></i><br>Subject</a>
+                          <a href="{% url 'exam' %}" class="nav-link small text-light  text-center"><i class="fas fa-book-open fa-2x"></i><br>Exam</a>
+                          <a href="{% url 'proctor' %}" class="nav-link small text-light  text-center"><i class="fas fa-chalkboard-teacher fa-2x"></i><br>Proctor</a>
+                          <a href="{% url 'upload_data' %}" class="nav-link text-light small  text-center"><i class="far fa-file-excel fa-2x"></i><br>Upload</a>
+                          <a href="{% url 'students' %}" class="nav-link small text-light  text-center"><i class="fas fa-user-graduate fa-2x"></i><br>Students</a>
+                          <a href="{% url 'exam_done' %}" class="nav-link small text-light  text-center"><i class="far fa-calendar fa-2x"></i><br>Completed Exam</a>
+                          <a href="{% url 'password_change' %}" class="nav-link small text-light  text-center mb-5"><i class="fas fa-cog fa-2x"></i><br>Settings</a>
+                </div>
+            </div>
+        {% block  content %}{% endblock %}
+        </div>
+    </div>
+{% block footer %}{% endblock %}
+</body>
+<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+<script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+<script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-beta.1/dist/js/select2.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@2.8.0"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-multiselect/0.9.13/js/bootstrap-multiselect.js"></script>
+<script src='{% static 'calender.js' %}'></script>
+<script src="{% static 'awesome_django_timezones/js/awesome_django_timezones.js' %}"></script>
+{% block script %}{% endblock %}
+<script>
+    $(document).ready(function () {
+        $('#id_subject_name').select2({
+            ajax: {
+                url: '{% url 'subject' %}',
+                dataType: 'json',
+                processResults: function (data) {
+                    return {
+                        results: $.map(data, function (item) {
+                            return {id:item,text: item};
+                        })
+                    };
+                }
+            },
+            language: {
+               noResults: function(){
+                   return "<span class='text-danger'><center><i class='fas fa-exclamation-triangle'></i> No Result Found</center></span><br> <button type='button' class='btn btn-primary btn-block' onclick='return other_click()'>Others</button> ";
+               }
+               },
+                escapeMarkup: function (markup) {
+                    return markup;
+                },
+            minimumInputLength: 2,
+        });
+
+        $('#id_exam_name').select2({
+            ajax: {
+                url: '{% url 'exam_add' %}',
+                dataType: 'json',
+                processResults: function (data) {
+                    return {
+                        results: $.map(data, function (item) {
+                            return {id:item,text: item};
+
+                        })
+                    };
+                }
+            },
+            language: {
+               noResults: function(){
+                   return "<span class='text-danger'><center><i class='fas fa-exclamation-triangle'></i> No Result Found</center></span><br> <button type='button' class='btn btn-primary btn-block' onclick='return other_click()'>Others</button> ";
+               }
+               },
+                escapeMarkup: function (markup) {
+                    return markup;
+                },
+            minimumInputLength: 2
+        });
+        $(".form-group>input,select,textarea").addClass("form-control");
+        $(".helptext>ul>li").addClass("nav-link");
+        $("#id_branch_id").change(function () {
+            const url = $("#subjects").attr("data-cities-url");  // get the url of the `load_cities` view
+            const branchId = $(this).val();  // get the selected country ID from the HTML input
+
+            $.ajax({                       // initialize an AJAX request
+                url: url,                    // set the url of the request (= /persons/ajax/load-cities/ )
+                data: {
+                    'branch_id': branchId       // add the country id to the GET parameters
+                },
+                success: function (data) {   // `data` is the return of the `load_cities` view function
+                    $("#id_subject_id").html(data);  // replace the contents of the city input with the data that came from the server
+                }
+            });
+        });
+        $('#id_assign_section').multiselect({
+            maxHeight: 200,
+            buttonWidth: '100%',
+        });
+        $('#id_proctor_id').multiselect({
+            maxHeight: 200,
+            buttonWidth: '100%',
+        });
+
+    });
+</script>
+</html>

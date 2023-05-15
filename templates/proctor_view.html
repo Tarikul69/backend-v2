@@ -1,0 +1,61 @@
+{% extends 'base.html' %}
+{% block content %}
+ <!---modal--->
+    <div class="modal fade" id="updateProctor{{ proctor.0.proctor_id }}" role="dialog">
+    <div class="modal-dialog">
+        <form  class="well contact-form" method="post" action="">
+            {% csrf_token %}
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title text-primary small">Update {{ proctor.0.proctor_title }} {{ proctor.0.proctor_name }} Details</h1>
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                </div>
+                <div class="modal-body">
+                    {% for form in form %}
+                    <div class="form-group">
+                                {{ form.label_tag }}
+                                {% if form.field.required %}<span class="text-danger">*</span>{% endif %}
+                                {{ form }}
+                                    <label for="" class="text-danger">{{ form.errors }}</label>
+                                </div>
+                    {% endfor %}
+                </div>
+                <div class="modal-footer">
+                    <button  type="submit" class="btn " style="background-image: linear-gradient(to right,#01c095, #0384d3);color: white;">Update</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+    <!-----end-modal---->
+<div class="col-lg-11">
+        <div class="card">
+            <div class="card-header bg-transparent">
+                 <div class="form-inline">
+            <span class=""><i class="fas fa-chalkboard-teacher fa-lg border rounded bg-primary text-light p-2"></i> Proctor Details</span>
+             <button type="button" class="btn btn-primary  ml-auto" data-toggle="modal" data-target="#updateProctor{{ proctor.0.proctor_id }}" title="Edit"><i class="fas fa-edit fa-lg text-light"></i></button>
+        </div>
+            </div>
+            <div class="card-body">
+                <table class="table table-responsive-sm">
+                    <tr class="small">
+                        <th>Proctor Name</th>
+                        <td>{{ proctor.0.proctor_title }} {{proctor.0.proctor_name}}</td>
+                    </tr>
+                    <tr class="small">
+                        <th>Email</th>
+                        <td>{{ proctor.0.proctor_email }}</td>
+                    </tr>
+                    <tr class="small">
+                        <th>Contact</th>
+                        <td>{{ proctor.0.proctor_phone }}</td>
+                    </tr>
+                    <tr class="small">
+                        <th>Assign Section</th>
+                        <td>{{ proctor.0.assign_section}}</td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+</div>
+{% endblock %}

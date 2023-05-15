@@ -1,0 +1,164 @@
+{% extends 'base.html' %}
+{% load template_tags %}
+{% block content %}
+    <div class="col-lg-11">
+    <div class="row">
+        <div class="col-lg-4">
+            <div class="card">
+                <div class="card-header bg-transparent"><i class="fas fa-book fa-lg bg-primary rounded text-light p-2"></i> Add Subject</div>
+                {% for foo in messages %}
+                                <div class="alert {{ foo.tags }}  alert-dismissible fade show " role="alert">
+                                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
+                                    {{ foo }}
+                                </div>
+                        {% endfor %}
+                <div class="card-body">
+                    <form action="{% url 'subject' %}" method="post" enctype="multipart/form-data">
+                        {% csrf_token %}
+                            <div class="form-group">
+                                <label for="id_exam_name">Subject Name:</label>
+                                <span class="text-danger">*</span>
+                                <select name="subject_name" class="form-control" maxlength="100" id="id_subject_name" onchange="others()" required>
+                                    <option value="" selected disabled>Search subject...</option>
+                                </select>
+                                <div id="other_subject"></div>
+                                    <label for="" class="text-danger"></label>
+                                </div>
+                            {% for form in form %}
+                                <div class="form-group">
+                                {{ form.label_tag }}
+                                {% if form.field.required %}<span class="text-danger">*</span>{% endif %}
+                                {{ form }}
+                                    <label for="" class="text-danger">{{ form.errors }}</label>
+                                </div>
+                            {% endfor %}
+                        <div class="form-group">
+                            <input type="submit" value="Add" class="btn btn-block" style="background-image: linear-gradient(to right,#01c095, #0384d3);color: white;">
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-8">
+            <div class="card">
+                <div class="card-body small">
+                    <table class="table table-hover table-responsive-sm">
+                        <tr>
+                            <th>Subject Name</th>
+                            <th>Subject Code</th>
+                            <th>Total Marks</th>
+                            <th>{% if request.user|get_college_type == 'College' %}Branch{% elif request.user|get_college_type == 'School' %}Class{% endif %}</th>
+                            <th>Actions</th>
+                        </tr>
+                        {% for s in page_obj %}
+                            <!---modal--->
+                            <div class="modal fade" id="subjectDelete{{ s.subject_id }}" role="dialog">
+                            <div class="modal-dialog">
+                                    <div class="modal-content">
+                                        <div class="modal-header border-0">
+                                            <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                        </div>
+                                        <div class="model-body border-0">
+                                            <center>
+                                            <i class='fas fa-exclamation-triangle fa-5x text-danger text-center'></i>
+                                            <p class="text-muted text-center mt-2">Are you sure you want to delete subject {{ s.subject_name }}</p>
+                                            </center>
+                                        </div>
+                                        <div class="modal-footer border-0">
+                                            <button type="button" class="btn btn-secondary " data-dismiss="modal">Cancel</button>
+                                            <a href="{% url 'subject_delete' s.subject_id %}" class="btn btn-danger">Delete</a>
+                                        </div>
+                                    </div>
+                            </div>
+                            </div>
+                            <!-----end-modal---->
+                            <tr>
+                            <td>{{ s.subject_name }}</td>
+                            <td>{{ s.subject_code }}</td>
+                            <td>{{ s.total_marks }}</td>
+                            <td>{{ s.branch_id.branch_name }}</td>
+                            <td>
+                                <a href="{% url 'subject_update' s.subject_id %}" class="btn btn-primary" title="Edit"><i class="fas fa-edit fa-lg "></i></a>
+                                <button type="button" class="btn btn-danger" data-toggle="modal" title="Delete" data-target="#subjectDelete{{ s.subject_id }}"><i class="fas fa-trash"></i></button>
+                            </td>
+                            </tr>
+                        {% endfor %}
+                    </table>
+                </div>
+            </div>
+            <nav aria-label="Page navigation example " style="margin-top: 10px!important;">
+    <div class="row">
+            <ul class="small">Showing <b>{{ page_obj.number }}</b> / <b>{{ page_obj.paginator.num_pages }}</b> entries</ul>
+            <ul class="pagination pagination-sm ml-auto mr-4">
+                  {% if page_obj.has_previous %}
+                    <li class="page-item ">
+                        <a href="?page={{ page_obj.previous_page_number }}" class="page-link"><i class="fas fa-long-arrow-alt-left  text-muted"> Previous</i></a>
+                    </li>
+                  {% else %}
+                      <li class="page-item disabled mr-2">
+                        <i class="fas fa-long-arrow-alt-left  page-link text-muted"> Previous</i>
+                    </li>
+                  {% endif %}
+                  {% if page_obj.paginator.num_pages == 1 %}
+                      <li class="page-item active"><a href="#" class="page-link">{{ page_obj.number }}</a></li>
+                  {% elif page_obj.number == 1 %}
+                      <li class="page-item active"><a href="#" class="page-link">{{ page_obj.number }}</a></li>
+                      <li class="page-item "><a href="?page={{ page_obj.number|add:1 }}" class="page-link">{{ page_obj.number|add:1 }}</a></li>
+                      <li class="page-item "><a href="?page={{ page_obj.paginator.num_pages }}" class="page-link">{{ page_obj.paginator.num_pages }}</a></li>
+                  {% elif page_obj.number|add:-1 == 1 %}
+                      <li class="page-item "><a href="?page=1" class="page-link">1</a></li>
+                      <li class="page-item active"><a href="#" class="page-link">{{ page_obj.number }}</a></li>
+                      <li class="page-item "><a href="?page={{ page_obj.number|add:1 }}" class="page-link">{{ page_obj.number|add:1 }}</a></li>
+                      <li class="page-item "><a href="?page={{ page_obj.paginator.num_pages }}" class="page-link">{{ page_obj.paginator.num_pages }}</a></li>
+                  {% elif page_obj.number == page_obj.paginator.num_pages %}
+                      <li class="page-item "><a href="?page=1" class="page-link">1</a></li>
+                      <li class="page-item "><a href="?page={{ page_obj.number|add:-1 }}" class="page-link">{{ page_obj.number|add:-1 }}</a></li>
+                      <li class="page-item active"><a href="#" class="page-link">{{ page_obj.number }}</a></li>
+                  {% elif page_obj.number|add:1 == page_obj.paginator.num_pages %}
+                      <li class="page-item "><a href="?page=1" class="page-link">1</a></li>
+                      <li class="page-item "><a href="?page={{ page_obj.number|add:-1 }}" class="page-link">{{ page_obj.number|add:-1 }}</a></li>
+                      <li class="page-item active"><a href="#" class="page-link">{{ page_obj.number }}</a></li>
+                      <li class="page-item "><a href="?page={{ page_obj.paginator.num_pages }}" class="page-link">{{ page_obj.paginator.num_pages }}</a></li>
+                  {% else %}
+                      <li class="page-item "><a href="?page=1" class="page-link">1</a></li>
+                      <li class="page-item "><a href="?page={{ page_obj.number|add:-1 }}" class="page-link">{{ page_obj.number|add:-1 }}</a></li>
+                      <li class="page-item active"><a href="#" class="page-link">{{ page_obj.number }}</a></li>
+                      <li class="page-item "><a href="?page={{ page_obj.number|add:1 }}" class="page-link">{{ page_obj.number|add:1 }}</a></li>
+                      <li class="page-item "><a href="?page={{ page_obj.paginator.num_pages }}" class="page-link">{{ page_obj.paginator.num_pages }}</a></li>
+                  {% endif %}
+
+                  {% if page_obj.has_next %}
+                    <li class="page-item">
+                        <a href="?page={{ page_obj.next_page_number }}" class="page-link"><i class="fas fa-long-arrow-alt-right  text-muted"> Next</i></a>
+                    </li>
+                  {% else %}
+                      <li class="page-item disabled ml-2">
+                        <i class="fas fa-long-arrow-alt-right page-link  text-muted"> Next</i>
+                    </li>
+                  {% endif %}
+
+                </ul>
+    </div>
+        </nav>
+        </div>
+    </div>
+    </div>
+    <script>
+    subject_name = document.getElementById('id_subject_name')
+    function others(){
+        if (subject_name.value == "Others"){
+            document.getElementById(`other_subject`).innerHTML = '<input type="text" name="other_subject" placeholder="subject name" class="form-control mt-2" required>';
+        }
+        else{
+            document.getElementById(`other_subject`).innerHTML = '';
+        }
+    }
+    function other_click(){
+            subject_name.innerHTML = '<option value="Others" selected>Others</option>'
+            document.getElementById(`other_subject`).innerHTML = '<input type="text" name="other_subject" placeholder="subject name" class="form-control mt-2" required>';
+            $("#id_subject_name").select2("close");
+        }
+    </script>
+{% endblock %}

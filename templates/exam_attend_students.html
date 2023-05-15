@@ -1,0 +1,95 @@
+{% extends 'base.html' %}
+{% load template_tags %}
+{% block content %}
+    <div class="col-lg-11">
+        <div class="card">
+            <div class="card-header bg-transparent"><i class="fas fa-user fa-lg border rounded bg-primary text-light p-2"></i> Attended Students</div>
+            <div class="card-body">
+                <table class="table table-responsive-sm">
+                    <thead class="bg-transparent">
+                    <tr>
+                        <th>S.N.</th>
+                        <th>Student Name</th>
+                        <th>MCQ Total Marks</th>
+                        <th>MCQ Obtained Marks</th>
+                        <th class="text-center">Actions</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for s in page_obj %}
+                        <tr>
+                        <td class="counterCell"></td>
+                        <td>{{ s.student_name }}</td>
+                        <td>{{ exam_id|total_marks }}</td>
+                        <td>{{ s.student_id|obtained_marks:exam_id }}</td>
+                        <td class="text-center">
+                            <a href="{% url 'student_answer_demo' s.student_id exam_id %}?sort=10" class="btn btn-primary" title="View"><i class="fas fa-eye"></i></a>
+                            <a href="{% url 'viewPdf' s.student_id exam_id %}" class="btn btn-danger" title="Pdf View"><i class="far fa-file-pdf"></i></a>
+                            <a href="{% url 'downloadPdf' s.student_id exam_id %}" class="btn btn-success" title="Pdf Download"><i class="fas fa-download"></i></a>
+                        </td>
+                        </tr>
+                    {% empty %}
+                        <tr>
+                            <td colspan="6"><div class="alert alert-danger h6 text-center p-3" role="alert">No Students!</div></td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    <nav aria-label="Page navigation example " style="margin-top: 10px!important;">
+    <div class="row">
+            <ul class="small">Showing <b>{{ page_obj.number }}</b> / <b>{{ page_obj.paginator.num_pages }}</b> entries</ul>
+            <ul class="pagination pagination-sm ml-auto mr-4">
+                  {% if page_obj.has_previous %}
+                    <li class="page-item ">
+                        <a href="?page={{ page_obj.previous_page_number }}" class="page-link"><i class="fas fa-long-arrow-alt-left  text-muted"> Previous</i></a>
+                    </li>
+                  {% else %}
+                      <li class="page-item disabled mr-2">
+                        <i class="fas fa-long-arrow-alt-left  page-link text-muted"> Previous</i>
+                    </li>
+                  {% endif %}
+                  {% if page_obj.paginator.num_pages == 1 %}
+                      <li class="page-item active"><a href="#" class="page-link">{{ page_obj.number }}</a></li>
+                  {% elif page_obj.number == 1 %}
+                      <li class="page-item active"><a href="#" class="page-link">{{ page_obj.number }}</a></li>
+                      <li class="page-item "><a href="?page={{ page_obj.number|add:1 }}" class="page-link">{{ page_obj.number|add:1 }}</a></li>
+                      <li class="page-item "><a href="?page={{ page_obj.paginator.num_pages }}" class="page-link">{{ page_obj.paginator.num_pages }}</a></li>
+                  {% elif page_obj.number|add:-1 == 1 %}
+                      <li class="page-item "><a href="?page=1" class="page-link">1</a></li>
+                      <li class="page-item active"><a href="#" class="page-link">{{ page_obj.number }}</a></li>
+                      <li class="page-item "><a href="?page={{ page_obj.number|add:1 }}" class="page-link">{{ page_obj.number|add:1 }}</a></li>
+                      <li class="page-item "><a href="?page={{ page_obj.paginator.num_pages }}" class="page-link">{{ page_obj.paginator.num_pages }}</a></li>
+                  {% elif page_obj.number == page_obj.paginator.num_pages %}
+                      <li class="page-item "><a href="?page=1" class="page-link">1</a></li>
+                      <li class="page-item "><a href="?page={{ page_obj.number|add:-1 }}" class="page-link">{{ page_obj.number|add:-1 }}</a></li>
+                      <li class="page-item active"><a href="#" class="page-link">{{ page_obj.number }}</a></li>
+                  {% elif page_obj.number|add:1 == page_obj.paginator.num_pages %}
+                      <li class="page-item "><a href="?page=1" class="page-link">1</a></li>
+                      <li class="page-item "><a href="?page={{ page_obj.number|add:-1 }}" class="page-link">{{ page_obj.number|add:-1 }}</a></li>
+                      <li class="page-item active"><a href="#" class="page-link">{{ page_obj.number }}</a></li>
+                      <li class="page-item "><a href="?page={{ page_obj.paginator.num_pages }}" class="page-link">{{ page_obj.paginator.num_pages }}</a></li>
+                  {% else %}
+                      <li class="page-item "><a href="?page=1" class="page-link">1</a></li>
+                      <li class="page-item "><a href="?page={{ page_obj.number|add:-1 }}" class="page-link">{{ page_obj.number|add:-1 }}</a></li>
+                      <li class="page-item active"><a href="#" class="page-link">{{ page_obj.number }}</a></li>
+                      <li class="page-item "><a href="?page={{ page_obj.number|add:1 }}" class="page-link">{{ page_obj.number|add:1 }}</a></li>
+                      <li class="page-item "><a href="?page={{ page_obj.paginator.num_pages }}" class="page-link">{{ page_obj.paginator.num_pages }}</a></li>
+                  {% endif %}
+
+                  {% if page_obj.has_next %}
+                    <li class="page-item">
+                        <a href="?page={{ page_obj.next_page_number }}" class="page-link"><i class="fas fa-long-arrow-alt-right  text-muted"> Next</i></a>
+                    </li>
+                  {% else %}
+                      <li class="page-item disabled ml-2">
+                        <i class="fas fa-long-arrow-alt-right page-link  text-muted"> Next</i>
+                    </li>
+                  {% endif %}
+
+                </ul>
+    </div>
+        </nav>
+    </div>
+{% endblock %}

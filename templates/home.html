@@ -1,0 +1,63 @@
+{% extends 'base.html' %}
+{% load template_tags %}
+{% block content %}
+<div class="col-lg-8 col-md-11">
+        <div class="card">
+            <div class="card-header bg-transparent">
+                 <div class="form-inline">
+            <span class="">{% if request.user|get_college_type == 'College' %}College{% elif request.user|get_college_type == 'School' %}School{% endif %} Details</span>
+          <a href="{% url 'update_college' college.0.college_id %}" class=" ml-auto bg-warning btn btn-sm" title="Edit"><i class="fas fa-pen text-light"></i></a>
+        </div>
+            </div>
+            <div class="card-body">
+                <table class="table table-responsive-sm">
+                    <tr class="small">
+                        <th>Name</th>
+                        <td>{{college.0.college_name}}</td>
+                    </tr>
+                    <tr class="small">
+                        <th>Email</th>
+                        <td>{{ user.0.email }}</td>
+                    </tr>
+                    <tr class="small">
+                        <th>Contact</th>
+                        <td>{{ college.0.college_contact }}</td>
+                    </tr>
+                    <tr class="small">
+                        <th>University</th>
+                        <td>{{ college.0.college_university }}</td>
+                    </tr>
+                    <tr class="small">
+                        <th>Code</th>
+                        <td>{{ college.0.college_code }}</td>
+                    </tr>
+                    <tr class="small">
+                        <th>Address</th>
+                        <td>{{college.0.college_address}}</td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+</div>
+<div class="col-lg-3 bg-light">
+<div class="wrapper ">
+
+    <div class="container-calendar">
+
+
+        <div class="button-container-calendar form-inline">
+            <button id="previous" class="mr-auto" onclick="previous()">&#8249;</button>
+            <p id="monthAndYear"></p>
+            <button id="next" class="ml-auto" onclick="next()">&#8250;</button>
+        </div>
+
+        <table class="table-calendar" id="calendar" data-lang="en">
+            <thead id="thead-month"></thead>
+            <tbody id="calendar-body"></tbody>
+        </table>
+
+    </div>
+
+</div>
+</div>
+{% endblock %}
